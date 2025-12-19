@@ -3,7 +3,7 @@ package me.forty2.controller;
 
 import me.forty2.dto.Result;
 import me.forty2.entity.Voucher;
-import me.forty2.service.IVoucherService;
+import me.forty2.service.VoucherService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class VoucherController {
 
     @Resource
-    private IVoucherService voucherService;
+    private VoucherService voucherService;
 
     /**
      * 新增普通券

@@ -1,7 +1,7 @@
 package me.forty2.service;
 
-import me.forty2.entity.Blog;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.forty2.entity.User;
 
 /**
  * <p>
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author 虎哥
  * @since 2021-12-22
  */
-public interface IBlogService extends IService<Blog> {
+public interface UserService extends IService<User> {
 
 }

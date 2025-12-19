@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author 虎哥
  * @since 2021-12-22
  */
-public interface IVoucherService extends IService<Voucher> {
+public interface VoucherService extends IService<Voucher> {
 
     Result queryVoucherOfShop(Long shopId);
 

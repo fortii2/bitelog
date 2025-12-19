@@ -1,6 +1,6 @@
 package me.forty2.service;
 
-import me.forty2.entity.Follow;
+import me.forty2.entity.Blog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author 虎哥
  * @since 2021-12-22
  */
-public interface IFollowService extends IService<Follow> {
+public interface BlogService extends IService<Blog> {
 
 }

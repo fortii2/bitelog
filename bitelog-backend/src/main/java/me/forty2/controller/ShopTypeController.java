@@ -3,7 +3,7 @@ package me.forty2.controller;
 
 import me.forty2.dto.Result;
 import me.forty2.entity.ShopType;
-import me.forty2.service.IShopTypeService;
+import me.forty2.service.ShopTypeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/shop-type")
 public class ShopTypeController {
     @Resource
-    private IShopTypeService typeService;
+    private ShopTypeService typeService;
 
     @GetMapping("list")
     public Result queryTypeList() {

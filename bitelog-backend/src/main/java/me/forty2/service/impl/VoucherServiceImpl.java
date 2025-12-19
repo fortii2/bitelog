@@ -5,8 +5,8 @@ import me.forty2.dto.Result;
 import me.forty2.entity.Voucher;
 import me.forty2.mapper.VoucherMapper;
 import me.forty2.entity.SeckillVoucher;
-import me.forty2.service.ISeckillVoucherService;
-import me.forty2.service.IVoucherService;
+import me.forty2.service.SeckillVoucherService;
+import me.forty2.service.VoucherService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +22,10 @@ import java.util.List;
  * @since 2021-12-22
  */
 @Service
-public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements IVoucherService {
+public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
     @Resource
-    private ISeckillVoucherService seckillVoucherService;
+    private SeckillVoucherService seckillVoucherService;
 
     @Override
     public Result queryVoucherOfShop(Long shopId) {

@@ -2,7 +2,7 @@ package me.forty2.service.impl;
 
 import me.forty2.entity.ShopType;
 import me.forty2.mapper.ShopTypeMapper;
-import me.forty2.service.IShopTypeService;
+import me.forty2.service.ShopTypeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2021-12-22
  */
 @Service
-public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> implements IShopTypeService {
+public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> implements ShopTypeService {
 
 }

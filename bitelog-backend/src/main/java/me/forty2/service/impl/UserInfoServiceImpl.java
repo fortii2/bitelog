@@ -2,7 +2,7 @@ package me.forty2.service.impl;
 
 import me.forty2.entity.UserInfo;
 import me.forty2.mapper.UserInfoMapper;
-import me.forty2.service.IUserInfoService;
+import me.forty2.service.UserInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2021-12-24
  */
 @Service
-public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements IUserInfoService {
+public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements UserInfoService {
 
 }

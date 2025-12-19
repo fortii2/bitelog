@@ -2,7 +2,7 @@ package me.forty2.service.impl;
 
 import me.forty2.entity.BlogComments;
 import me.forty2.mapper.BlogCommentsMapper;
-import me.forty2.service.IBlogCommentsService;
+import me.forty2.service.BlogCommentsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2021-12-22
  */
 @Service
-public class BlogCommentsServiceImpl extends ServiceImpl<BlogCommentsMapper, BlogComments> implements IBlogCommentsService {
+public class BlogCommentsServiceImpl extends ServiceImpl<BlogCommentsMapper, BlogComments> implements BlogCommentsService {
 
 }

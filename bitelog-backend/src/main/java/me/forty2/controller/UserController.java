@@ -4,8 +4,8 @@ package me.forty2.controller;
 import me.forty2.dto.LoginFormDTO;
 import me.forty2.dto.Result;
 import me.forty2.entity.UserInfo;
-import me.forty2.service.IUserInfoService;
-import me.forty2.service.IUserService;
+import me.forty2.service.UserInfoService;
+import me.forty2.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,10 +26,10 @@ import javax.servlet.http.HttpSession;
 public class UserController {
 
     @Resource
-    private IUserService userService;
+    private UserService userService;
 
     @Resource
-    private IUserInfoService userInfoService;
+    private UserInfoService userInfoService;
 
     /**
      * 发送手机验证码

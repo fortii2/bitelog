@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import me.forty2.dto.Result;
 import me.forty2.entity.Shop;
-import me.forty2.service.IShopService;
+import me.forty2.service.ShopService;
 import me.forty2.utils.SystemConstants;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 public class ShopController {
 
     @Resource
-    public IShopService shopService;
+    public ShopService shopService;
 
     /**
      * 根据id查询商铺信息

@@ -6,8 +6,8 @@ import me.forty2.dto.Result;
 import me.forty2.dto.UserDTO;
 import me.forty2.entity.Blog;
 import me.forty2.entity.User;
-import me.forty2.service.IBlogService;
-import me.forty2.service.IUserService;
+import me.forty2.service.BlogService;
+import me.forty2.service.UserService;
 import me.forty2.utils.SystemConstants;
 import me.forty2.utils.UserHolder;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +28,9 @@ import java.util.List;
 public class BlogController {
 
     @Resource
-    private IBlogService blogService;
+    private BlogService blogService;
     @Resource
-    private IUserService userService;
+    private UserService userService;
 
     @PostMapping
     public Result saveBlog(@RequestBody Blog blog) {

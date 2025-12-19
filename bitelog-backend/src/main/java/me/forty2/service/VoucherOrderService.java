@@ -1,7 +1,7 @@
 package me.forty2.service;
 
+import me.forty2.entity.VoucherOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
-import me.forty2.entity.User;
 
 /**
  * <p>
@@ -11,6 +11,6 @@ import me.forty2.entity.User;
  * @author 虎哥
  * @since 2021-12-22
  */
-public interface IUserService extends IService<User> {
+public interface VoucherOrderService extends IService<VoucherOrder> {
 
 }
