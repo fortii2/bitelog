@@ -1,0 +1,44 @@
+# auth
+application-secret.yml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Maven / Java build
+target/
+dependency-reduced-pom.xml
+release.properties
+buildNumber.properties
+.mvn/timing.properties
+
+# Java artifacts
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# Logs, temp, coverage
+*.log
+*.log.*
+hs_err_pid*
+coverage/
+*.tmp
+*.cache
+
+# Environment / local config
+.env
+.env.local
+local.properties
+
+# OS / Windows
+Thumbs.db
+Desktop.ini
