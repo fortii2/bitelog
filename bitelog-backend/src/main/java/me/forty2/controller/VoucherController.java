@@ -4,9 +4,8 @@ package me.forty2.controller;
 import me.forty2.dto.Result;
 import me.forty2.entity.Voucher;
 import me.forty2.service.VoucherService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 /**
  * <p>
@@ -20,7 +19,7 @@ import javax.annotation.Resource;
 @RequestMapping("/voucher")
 public class VoucherController {
 
-    @Resource
+    @Autowired
     private VoucherService voucherService;
 
     /**

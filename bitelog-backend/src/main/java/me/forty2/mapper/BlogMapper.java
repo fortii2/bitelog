@@ -1,7 +1,7 @@
 package me.forty2.mapper;
 
-import me.forty2.entity.Blog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import me.forty2.entity.Blog;
 
 /**
  * <p>

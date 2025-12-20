@@ -3,7 +3,6 @@ package me.forty2.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.forty2.dto.LoginFormDTO;
 import me.forty2.dto.UserDTO;
@@ -11,8 +10,6 @@ import me.forty2.entity.User;
 import me.forty2.mapper.UserMapper;
 import me.forty2.service.UserService;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpSession;
 
 /**
  * <p>

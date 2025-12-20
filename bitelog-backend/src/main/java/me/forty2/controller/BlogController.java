@@ -10,9 +10,9 @@ import me.forty2.service.BlogService;
 import me.forty2.service.UserService;
 import me.forty2.utils.SystemConstants;
 import me.forty2.utils.UserHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -27,9 +27,9 @@ import java.util.List;
 @RequestMapping("/blog")
 public class BlogController {
 
-    @Resource
+    @Autowired
     private BlogService blogService;
-    @Resource
+    @Autowired
     private UserService userService;
 
     @PostMapping

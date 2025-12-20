@@ -1,7 +1,7 @@
 package me.forty2.service;
 
-import me.forty2.entity.ShopType;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.forty2.entity.ShopType;
 
 /**
  * <p>

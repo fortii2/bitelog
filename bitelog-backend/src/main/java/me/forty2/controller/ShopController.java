@@ -7,9 +7,8 @@ import me.forty2.dto.Result;
 import me.forty2.entity.Shop;
 import me.forty2.service.ShopService;
 import me.forty2.utils.SystemConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 /**
  * <p>
@@ -23,11 +22,12 @@ import javax.annotation.Resource;
 @RequestMapping("/shop")
 public class ShopController {
 
-    @Resource
+    @Autowired
     public ShopService shopService;
 
     /**
      * 根据id查询商铺信息
+     *
      * @param id 商铺id
      * @return 商铺详情数据
      */
@@ -38,6 +38,7 @@ public class ShopController {
 
     /**
      * 新增商铺信息
+     *
      * @param shop 商铺数据
      * @return 商铺id
      */
@@ -51,6 +52,7 @@ public class ShopController {
 
     /**
      * 更新商铺信息
+     *
      * @param shop 商铺数据
      * @return 无
      */
@@ -63,7 +65,8 @@ public class ShopController {
 
     /**
      * 根据商铺类型分页查询商铺信息
-     * @param typeId 商铺类型
+     *
+     * @param typeId  商铺类型
      * @param current 页码
      * @return 商铺列表
      */
@@ -82,7 +85,8 @@ public class ShopController {
 
     /**
      * 根据商铺名称关键字分页查询商铺信息
-     * @param name 商铺名称关键字
+     *
+     * @param name    商铺名称关键字
      * @param current 页码
      * @return 商铺列表
      */

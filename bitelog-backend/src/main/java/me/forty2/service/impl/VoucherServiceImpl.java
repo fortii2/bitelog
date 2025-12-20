@@ -2,15 +2,15 @@ package me.forty2.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.forty2.dto.Result;
+import me.forty2.entity.SeckillVoucher;
 import me.forty2.entity.Voucher;
 import me.forty2.mapper.VoucherMapper;
-import me.forty2.entity.SeckillVoucher;
 import me.forty2.service.SeckillVoucherService;
 import me.forty2.service.VoucherService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -24,7 +24,7 @@ import java.util.List;
 @Service
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
-    @Resource
+    @Autowired
     private SeckillVoucherService seckillVoucherService;
 
     @Override

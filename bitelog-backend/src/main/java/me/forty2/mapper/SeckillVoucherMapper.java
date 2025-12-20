@@ -1,7 +1,7 @@
 package me.forty2.mapper;
 
-import me.forty2.entity.SeckillVoucher;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import me.forty2.entity.SeckillVoucher;
 
 /**
  * <p>

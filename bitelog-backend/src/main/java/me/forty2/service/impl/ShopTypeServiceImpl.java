@@ -1,9 +1,9 @@
 package me.forty2.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.forty2.entity.ShopType;
 import me.forty2.mapper.ShopTypeMapper;
 import me.forty2.service.ShopTypeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

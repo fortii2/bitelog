@@ -5,8 +5,6 @@ import me.forty2.dto.LoginFormDTO;
 import me.forty2.dto.UserDTO;
 import me.forty2.entity.User;
 
-import javax.servlet.http.HttpSession;
-
 /**
  * <p>
  *  服务类

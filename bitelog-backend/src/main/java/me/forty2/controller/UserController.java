@@ -2,20 +2,18 @@ package me.forty2.controller;
 
 
 import cn.hutool.core.util.RandomUtil;
+import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import me.forty2.dto.LoginFormDTO;
 import me.forty2.dto.Result;
 import me.forty2.dto.UserDTO;
 import me.forty2.entity.UserInfo;
 import me.forty2.service.UserInfoService;
 import me.forty2.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 import me.forty2.utils.RegexUtils;
 import me.forty2.utils.UserHolder;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
 
 /**
  * <p>
@@ -30,10 +28,10 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/user")
 public class UserController {
 
-    @Resource
+    @Autowired
     private UserService userService;
 
-    @Resource
+    @Autowired
     private UserInfoService userInfoService;
 
     /**
