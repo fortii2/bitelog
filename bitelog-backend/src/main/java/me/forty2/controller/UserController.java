@@ -50,7 +50,11 @@ public class UserController {
      */
     @PostMapping("/login")
     public Result login(@RequestBody LoginFormDTO loginForm) {
-        return userService.loginOrRegister(loginForm);
+        try {
+            return userService.loginOrRegister(loginForm);
+        } catch (Exception e) {
+            return Result.fail(e.getMessage());
+        }
     }
 
     /**

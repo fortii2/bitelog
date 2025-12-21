@@ -1,7 +1,6 @@
 package me.forty2.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,15 +11,14 @@ import me.forty2.dto.UserDTO;
 import me.forty2.entity.User;
 import me.forty2.mapper.UserMapper;
 import me.forty2.service.UserService;
+import me.forty2.utils.JwtUtils;
 import me.forty2.utils.RedisConstants;
 import me.forty2.utils.RegexUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,8 +36,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
+    @Value("${my-jwt.secret}")
+    private String secret;
+
     @Override
-    public Result loginOrRegister(LoginFormDTO loginForm) {
+    public Result loginOrRegister(LoginFormDTO loginForm) throws Exception {
 
         String validCodeFromRedis = stringRedisTemplate.opsForValue().get(RedisConstants.LOGIN_CODE_KEY + loginForm.getPhone());
 
@@ -70,18 +71,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
 
-        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
-                CopyOptions.create()
-                        .setIgnoreNullValue(true)
-                        .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString())
-        );
-
-        UUID token = UUID.randomUUID();
-        String tokenKey = RedisConstants.LOGIN_USER_KEY + token;
-        stringRedisTemplate.opsForHash().putAll(tokenKey, userMap);
-        stringRedisTemplate.expire(tokenKey, RedisConstants.LOGIN_USER_TTL, TimeUnit.SECONDS);
-
-        return Result.ok(token);
+        return Result.ok(JwtUtils.generateJWT(userDTO, secret));
     }
 
     @Override

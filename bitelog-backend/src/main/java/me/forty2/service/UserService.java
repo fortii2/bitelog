@@ -15,7 +15,7 @@ import me.forty2.entity.User;
  */
 public interface UserService extends IService<User> {
 
-    Result loginOrRegister(LoginFormDTO loginForm);
+    Result loginOrRegister(LoginFormDTO loginForm) throws Exception;
 
     Result sendCode(String phone);
 }
