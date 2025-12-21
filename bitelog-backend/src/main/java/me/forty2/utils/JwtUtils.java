@@ -2,12 +2,14 @@ package me.forty2.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.forty2.dto.UserDTO;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Objects;
 
 public class JwtUtils {
 
@@ -34,6 +36,49 @@ public class JwtUtils {
         return toSign + CommonConstants.DOT + signature;
     }
 
+    public static boolean checkJWT(String jwt, String secret) throws Exception {
+        String[] splits = jwt.split("\\.");
+        if (splits.length != 3) {
+            return false;
+        }
+
+        Base64.Decoder urlDecoder = Base64.getUrlDecoder();
+
+        byte[] decodedHeader = urlDecoder.decode(splits[0].getBytes(StandardCharsets.UTF_8));
+        JwtHeader jwtHeader = objectMapper.readValue(decodedHeader, JwtHeader.class);
+        if (!Objects.equals(jwtHeader.getAlg(), CommonConstants.JWT_ALG) ||
+                !Objects.equals(jwtHeader.getTyp(), CommonConstants.JWT_TYP)) {
+            return false;
+        }
+
+        byte[] decodedPayload = urlDecoder.decode(splits[1].getBytes(StandardCharsets.UTF_8));
+        JwtPayload jwtPayload = objectMapper.readValue(decodedPayload, JwtPayload.class);
+        if (jwtPayload.getExp() < System.currentTimeMillis() / 1000) {
+            return false;
+        }
+
+        String signAgain = Base64.getUrlEncoder().withoutPadding().encodeToString(hmacSha256(splits[0] + CommonConstants.DOT + splits[1], secret));
+        if (!signAgain.equals(splits[2])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static UserDTO getPayload(String jwt, String secret) throws Exception {
+        if (!checkJWT(jwt, secret)) {
+            return null;
+        }
+
+        String[] splits = jwt.split("\\.");
+
+        Base64.Decoder urlDecoder = Base64.getUrlDecoder();
+        byte[] decodedPayload = urlDecoder.decode(splits[1].getBytes(StandardCharsets.UTF_8));
+        JwtPayload jwtPayload = objectMapper.readValue(decodedPayload, JwtPayload.class);
+
+        return jwtPayload.getUserDTO();
+    }
+
     private static byte[] hmacSha256(String data, String secret) throws Exception {
         Mac sha256HMAC = Mac.getInstance(CommonConstants.HS256);
 
@@ -55,6 +100,7 @@ public class JwtUtils {
     }
 
     @Getter
+    @NoArgsConstructor
     private static class JwtPayload {
         public UserDTO userDTO;
         public long iat;
