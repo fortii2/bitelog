@@ -17,4 +17,6 @@ import java.io.IOException;
 public interface ShopService extends IService<Shop> {
 
     Result queryById(Long id);
+
+    Result saveById(Shop shop);
 }
