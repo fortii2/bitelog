@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import me.forty2.dto.Result;
 import me.forty2.entity.Shop;
 
-import java.io.IOException;
-
 /**
  * <p>
  * 服务类
