@@ -1,11 +1,13 @@
 package me.forty2.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import me.forty2.dto.RedisDataWithExpireTime;
 import me.forty2.dto.Result;
 import me.forty2.entity.Shop;
 import me.forty2.mapper.ShopMapper;
@@ -18,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,6 +52,52 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
         return Result.ok(shop);
     }
+
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(10);
+
+    public Shop queryWithLogicalExpire(Long id) {
+        String key = RedisConstants.CACHE_SHOP_KEY + id;
+        String shopJson = stringRedisTemplate.opsForValue().get(key);
+
+        if (StrUtil.isBlank(shopJson)) {
+            return null;
+        }
+
+        RedisDataWithExpireTime data = JSONUtil.toBean(shopJson, RedisDataWithExpireTime.class);
+
+        // data not expire
+        if (LocalDateTime.now().isBefore(data.getExpireTime())) {
+            return (Shop) data.getData();
+        }
+
+        String lockKey = RedisConstants.LOCK_SHOP_KEY + id;
+
+        // rebuild
+        if (lock(lockKey)) {
+            threadPool.submit(() -> {
+                try {
+                    save2Redis(id, 20L);
+                } catch (Exception e) {
+                    throw new RuntimeException();
+                } finally {
+                    unlock(lockKey);
+                }
+            });
+        }
+
+        return (Shop) data.getData();
+    }
+
+    public void save2Redis(Long id, Long expire) {
+        Shop shop = this.getById(id);
+        RedisDataWithExpireTime data = new RedisDataWithExpireTime();
+
+        data.setData(shop);
+        data.setExpireTime(LocalDateTime.now().plusSeconds(expire));
+
+        stringRedisTemplate.opsForValue().set(RedisConstants.CACHE_SHOP_KEY + id, JSONUtil.toJsonStr(data));
+    }
+
 
     public Shop queryByIdFixedCacheBreakdownAndCachePenetration(Long id) {
         String key = RedisConstants.CACHE_SHOP_KEY + id;
