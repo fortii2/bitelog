@@ -1,5 +1,6 @@
 package me.forty2.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.forty2.dto.Result;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, VoucherOrder> implements VoucherOrderService {
@@ -36,6 +38,20 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
         if (seckillVoucher.getEndTime().isBefore(LocalDateTime.now())) {
             return Result.fail("秒杀已经结束");
+        }
+
+        return tryBuy(seckillVoucher);
+    }
+
+    private Result tryBuy(SeckillVoucher seckillVoucher) {
+        List<VoucherOrder> voucherOrders = query().getBaseMapper().selectList(
+                new LambdaQueryWrapper<VoucherOrder>()
+                        .eq(VoucherOrder::getUserId, UserHolder.getUser().getId())
+                        .eq(VoucherOrder::getVoucherId, seckillVoucher.getVoucherId())
+        );
+
+        if (!voucherOrders.isEmpty()) {
+            return Result.fail("秒杀券限购一个");
         }
 
         int update = seckillVoucherMapper.update(new LambdaUpdateWrapper<SeckillVoucher>()
