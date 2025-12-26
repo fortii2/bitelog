@@ -2,6 +2,10 @@ package me.forty2.controller;
 
 
 import me.forty2.dto.Result;
+import me.forty2.entity.SeckillVoucher;
+import me.forty2.service.SeckillVoucherService;
+import me.forty2.service.VoucherOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author 虎哥
@@ -18,8 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/voucher-order")
 public class VoucherOrderController {
-    @PostMapping("seckill/{id}")
+
+    @Autowired
+    private SeckillVoucherService seckillVoucherService;
+
+    @Autowired
+    private VoucherOrderService voucherOrderService;
+
+    @PostMapping("/seckill/{id}")
     public Result seckillVoucher(@PathVariable("id") Long voucherId) {
-        return Result.fail("功能未完成");
+        SeckillVoucher seckillVoucher = seckillVoucherService.getById(voucherId);
+        return voucherOrderService.orderSeckillVoucher(seckillVoucher);
     }
 }

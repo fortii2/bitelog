@@ -1,6 +1,7 @@
 package me.forty2.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import me.forty2.dto.Result;
 import me.forty2.entity.SeckillVoucher;
 import me.forty2.entity.Voucher;
@@ -13,14 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * <p>
- *  服务实现类
- * </p>
- *
- * @author 虎哥
- * @since 2021-12-22
- */
+@Slf4j
 @Service
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
@@ -41,11 +35,14 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         // 保存优惠券
         save(voucher);
         // 保存秒杀信息
+        log.info("starting seckillVoucher..");
         SeckillVoucher seckillVoucher = new SeckillVoucher();
         seckillVoucher.setVoucherId(voucher.getId());
         seckillVoucher.setStock(voucher.getStock());
         seckillVoucher.setBeginTime(voucher.getBeginTime());
         seckillVoucher.setEndTime(voucher.getEndTime());
+        log.info("saving seckillVoucher..");
         seckillVoucherService.save(seckillVoucher);
+        log.info("finished seckillVoucher..");
     }
 }
