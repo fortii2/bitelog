@@ -11,6 +11,8 @@ import me.forty2.mapper.VoucherOrderMapper;
 import me.forty2.service.VoucherOrderService;
 import me.forty2.utils.IdGenerator;
 import me.forty2.utils.UserHolder;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +31,13 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     @Autowired
     private IdGenerator idGenerator;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Autowired
+    private VoucherOrderService voucherOrderService;
+
     @Override
-    @Transactional
     public Result orderSeckillVoucher(SeckillVoucher seckillVoucher) {
         if (seckillVoucher.getBeginTime().isAfter(LocalDateTime.now())) {
             return Result.fail("秒杀尚未开始");
@@ -40,10 +47,22 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             return Result.fail("秒杀已经结束");
         }
 
-        return tryBuy(seckillVoucher);
+        RLock lock = redissonClient.getLock("lock:voucher:" + UserHolder.getUser().getId());
+        boolean isLock = lock.tryLock();
+
+        if (!isLock) {
+            return Result.fail("秒杀券限购一个");
+        }
+
+        try {
+            return voucherOrderService.tryBuy(seckillVoucher);
+        } finally {
+            lock.unlock();
+        }
     }
 
-    private Result tryBuy(SeckillVoucher seckillVoucher) {
+    @Transactional
+    public Result tryBuy(SeckillVoucher seckillVoucher) {
         List<VoucherOrder> voucherOrders = query().getBaseMapper().selectList(
                 new LambdaQueryWrapper<VoucherOrder>()
                         .eq(VoucherOrder::getUserId, UserHolder.getUser().getId())
