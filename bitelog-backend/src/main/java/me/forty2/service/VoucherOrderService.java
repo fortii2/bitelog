@@ -9,6 +9,5 @@ public interface VoucherOrderService extends IService<VoucherOrder> {
 
     Result orderSeckillVoucher(SeckillVoucher seckillVoucher);
 
-    Result tryBuy(SeckillVoucher seckillVoucher);
-
+    void submitOrder(VoucherOrder order);
 }

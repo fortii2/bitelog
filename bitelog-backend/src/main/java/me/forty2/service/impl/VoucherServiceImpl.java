@@ -8,7 +8,9 @@ import me.forty2.entity.Voucher;
 import me.forty2.mapper.VoucherMapper;
 import me.forty2.service.SeckillVoucherService;
 import me.forty2.service.VoucherService;
+import me.forty2.utils.RedisConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,9 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
     @Autowired
     private SeckillVoucherService seckillVoucherService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public Result queryVoucherOfShop(Long shopId) {
@@ -44,5 +49,10 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         log.info("saving seckillVoucher..");
         seckillVoucherService.save(seckillVoucher);
         log.info("finished seckillVoucher..");
+
+        stringRedisTemplate.opsForValue().set(
+                RedisConstants.SECKILL_STOCK_KEY + seckillVoucher.getVoucherId().toString(),
+                seckillVoucher.getStock().toString()
+        );
     }
 }
