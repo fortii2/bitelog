@@ -1,5 +1,6 @@
 package me.forty2.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.PostConstruct;
@@ -16,14 +17,15 @@ import me.forty2.utils.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,7 +35,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
     public static final String ORDER = "order";
 
-    private BlockingQueue<VoucherOrder> voucherOrdersQueue = new ArrayBlockingQueue<>(65535);
+    // private BlockingQueue<VoucherOrder> voucherOrdersQueue = new ArrayBlockingQueue<>(65535);
 
     private static final ExecutorService SECKILL_ORDER_EXECUTOR = Executors.newSingleThreadExecutor();
 
@@ -43,9 +45,52 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
         public void run() {
             while (true) {
                 try {
-                    VoucherOrder order = voucherOrdersQueue.take();
+                    List<MapRecord<String, Object, Object>> list = stringRedisTemplate.opsForStream().read(
+                            Consumer.from(RedisConstants.ORDER_GROUP, "c1"),
+                            StreamReadOptions.empty().count(1).block(Duration.ofSeconds(2)),
+                            StreamOffset.create(RedisConstants.ORDER_STREAM, ReadOffset.lastConsumed())
+                    );
 
-                    voucherOrderService.submitOrder(order);
+                    if (list == null || list.isEmpty()) {
+                        continue;
+                    }
+
+                    MapRecord<String, Object, Object> entries = list.getFirst();
+                    Map<Object, Object> values = entries.getValue();
+
+                    VoucherOrder voucherOrder = BeanUtil.fillBeanWithMap(values, new VoucherOrder(), true);
+
+                    voucherOrderService.submitOrder(voucherOrder);
+                    stringRedisTemplate.opsForStream().acknowledge(RedisConstants.ORDER_STREAM, RedisConstants.ORDER_GROUP, entries.getId());
+
+                } catch (Exception e) {
+                    log.error("order handler error.");
+                    retryMsg();
+                }
+            }
+        }
+
+        private void retryMsg() {
+            while (true) {
+                try {
+                    List<MapRecord<String, Object, Object>> list = stringRedisTemplate.opsForStream().read(
+                            Consumer.from(RedisConstants.ORDER_GROUP, "c1"),
+                            StreamReadOptions.empty().count(1).block(Duration.ofSeconds(2)),
+                            StreamOffset.create(RedisConstants.ORDER_STREAM, ReadOffset.from("0")) // pending list
+                    );
+
+                    if (list == null || list.isEmpty()) {
+                        break;
+                    }
+
+                    MapRecord<String, Object, Object> entries = list.getFirst();
+                    Map<Object, Object> values = entries.getValue();
+
+                    VoucherOrder voucherOrder = BeanUtil.fillBeanWithMap(values, new VoucherOrder(), true);
+
+                    voucherOrderService.submitOrder(voucherOrder);
+                    stringRedisTemplate.opsForStream().acknowledge(RedisConstants.ORDER_STREAM, RedisConstants.ORDER_GROUP, entries.getId());
+
                 } catch (Exception e) {
                     log.error("order handler error.");
                 }
@@ -91,7 +136,15 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
 
     @Override
     public Result orderSeckillVoucher(SeckillVoucher seckillVoucher) {
-        long result = stringRedisTemplate.execute(SECKILL_SCRIPT, List.of(RedisConstants.SECKILL_STOCK_KEY, RedisConstants.SECKILL_ORDER_KEY), seckillVoucher.getVoucherId().toString(), UserHolder.getUser().getId().toString());
+
+        Long orderId = idGenerator.nextId(ORDER);
+
+        long result = stringRedisTemplate.execute(
+                SECKILL_SCRIPT,
+                List.of(RedisConstants.SECKILL_STOCK_KEY, RedisConstants.SECKILL_ORDER_KEY),
+                seckillVoucher.getVoucherId().toString(),
+                UserHolder.getUser().getId().toString(),
+                orderId.toString());
 
         if (result == 1) {
             return Result.fail("stock is 0.");
@@ -101,17 +154,33 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
             return Result.fail("can only buy one item.");
         }
 
-        long orderId = idGenerator.nextId(ORDER);
-
-        // put into blocking queue
-        VoucherOrder voucherOrder = new VoucherOrder();
-        voucherOrder.setId(orderId);
-        voucherOrder.setUserId(UserHolder.getUser().getId());
-        voucherOrder.setVoucherId(seckillVoucher.getVoucherId());
-        voucherOrdersQueue.add(voucherOrder);
-
         return Result.ok(orderId);
     }
+
+    /**
+     @Override public Result orderSeckillVoucher(SeckillVoucher seckillVoucher) {
+     long result = stringRedisTemplate.execute(SECKILL_SCRIPT, List.of(RedisConstants.SECKILL_STOCK_KEY, RedisConstants.SECKILL_ORDER_KEY), seckillVoucher.getVoucherId().toString(), UserHolder.getUser().getId().toString());
+
+     if (result == 1) {
+     return Result.fail("stock is 0.");
+     }
+
+     if (result == 2) {
+     return Result.fail("can only buy one item.");
+     }
+
+     long orderId = idGenerator.nextId(ORDER);
+
+     // put into blocking queue
+     VoucherOrder voucherOrder = new VoucherOrder();
+     voucherOrder.setId(orderId);
+     voucherOrder.setUserId(UserHolder.getUser().getId());
+     voucherOrder.setVoucherId(seckillVoucher.getVoucherId());
+     voucherOrdersQueue.add(voucherOrder);
+
+     return Result.ok(orderId);
+     }
+     **/
 
     /**
      * @Override public Result orderSeckillVoucher(SeckillVoucher seckillVoucher) {
